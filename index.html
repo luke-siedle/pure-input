@@ -1,0 +1,1707 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<title>Pure Input 1.0</title>
+		
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+			
+			<!-- Documentation -->
+			
+			<script type="text/javascript" src="docs/javascript/syntaxhighlighter/scripts/shCore.js"></script>
+			<script type="text/javascript" src="docs/javascript/syntaxhighlighter/scripts/shBrushJScript.js"></script>
+			<script type="text/javascript" src="docs/javascript/syntaxhighlighter/scripts/shBrushXml.js"></script>
+			<link type="text/css" rel="stylesheet" href="docs/javascript/syntaxhighlighter/styles/shCoreDefault.css"/>
+			<script type="text/javascript">SyntaxHighlighter.all();</script>
+			<link rel="stylesheet" href="docs/css/index.css" />
+
+			<!-- Pure Styles -->
+			<link rel="stylesheet" href="src/css/pure-default.css" />
+			
+			<!-- jQuery -->
+			<script type="text/javascript" src="src/assets/jquery-1.7.2.js"></script>
+			
+			<!-- Pure Javascript -->
+			<script type="text/javascript" src="dist/pure-base-1.0.0.min.js"></script>
+			<script type="text/javascript" src="dist/pure-all-1.0.0.min.js"></script>
+
+			<!-- Examples -->
+			<script type="text/javascript" src="docs/javascript/examples.js"></script>
+			<script type="text/javascript" src="docs/javascript/example1.js"></script>
+			<script type="text/javascript" src="docs/javascript/example2.js"></script>
+			<script type="text/javascript" src="docs/javascript/example3.js"></script>
+			<script type="text/javascript" src="docs/javascript/example4.js"></script>
+			<script type="text/javascript" src="docs/javascript/example5.js"></script>
+			<script type="text/javascript" src="docs/javascript/example6.js"></script>
+			<script type="text/javascript" src="docs/javascript/example7.js"></script>
+			
+	</head>
+	<body>
+		<div class="super-wrapper">
+			<div class="header">
+				<div class="logo"></div>
+				<div class="plugin-header"></div>
+			</div>
+			<div class="content-wrapper">
+				<p><em>NOTE: Please run this documentation on your local server, or some of the examples featuring AJAX may not work correctly.</em></p>
+				<h1>Basic Topics</h1>
+				<a name="Introduction"></a>
+				<p><strong>Introduction</strong></p>
+				<p>Pure is a plugin library built on jQuery and John Resig's JavaScript inheritance pattern, for enhancing native browser elements.</p>
+				<a name="Installation"></a>
+				<p><strong>Installation</strong></p>
+				<p>Simply add the pure-base-1.0.min.js file and pure-input-1.0.min.js file in the head of your document just after you include jQuery. For styling, begin by using the default css template.</p>
+				<pre class="brush: html;">
+					&lt;html&gt;
+						&lt;head&gt;
+							&lt;title&gt;My Document&lt;/title&gt;
+							&lt;script type="text/javascript" src="js/jquery-1.7.2.min.js" &gt;&lt;/script&gt;
+							&lt;script type="text/javascript" src="js/pure-base-1.0.0.min.js" &gt;&lt;/script&gt;
+							&lt;script type="text/javascript" src="js/pure-input-1.0.0.min.js" &gt;&lt;/script&gt;
+							&lt;link rel="stylesheet" href="css/pure-default-1.0.0.min.css" /&gt;
+						&lt;/head&gt;
+					&lt;/html&gt;
+					</html>
+				</pre>
+				<p>Thereafter, construction of a Pure object should be nested within a jQuery ready handler.</p>
+				<pre class="brush: js;">
+					
+					// Wait for the input element to be available in the DOM //
+
+					$( function(){
+
+						$('.myInput').Pure('Input', {
+							hint : 'I am ready'
+						});
+
+					});
+
+				</pre>
+				<p><em>For the purposes of this documentation, any JavaScript code is assumed to be nested within a jQuery ready handler.</em></p>
+				<a name="Implementation"></a>
+				<p><strong>Implementation</strong></p>
+				<p>Implementation uses only a single jQuery namespace, "Pure". There is the Pure object you want to call, in this case <em>Input</em>, the set of user-defined options to go with it, and a public interface to give you access to some useful methods.</p>
+				<pre class="brush: js;">
+					
+					//	Simple jQuery binding //
+
+					$('.myInput').Pure('Input', {
+						hint : 'Focus on me'
+					});
+
+					/*
+					*	Note : The above method of construction 
+					*	supports chaining but in this case, 
+					*	Pure hides the original input and uses 
+					*	its own one, since it has to complete 
+					*	more complex functions and be available 
+					*	to move flexibly in the DOM.
+					*/
+
+					// Simple Object Oriented binding //
+
+					var input = new Pure('Input', {
+						el		: $('.myInput'),
+						hint	: 'Focus on me'
+					});
+
+					/*
+					*	Note : If you use the OOP methodology as above,
+					*	you are automatically returned
+					*	a public interface of methods.
+					*/
+					
+					input.val('New value');
+					input.focus();
+					
+					/*
+					*	If you instantiate using jQuery, you can 
+					*	access the methods by using the same syntax
+					*	as you used to construct, but without passing
+					*	any options.
+					*/
+
+					var methods = $('.myInput').Pure('Input');
+
+					methods.val('Another new value');
+					methods.focus();
+
+					methods == input // true //
+				
+				</pre>
+
+				You can add <strong>plugins</strong> either during instantiation (in the options object),
+				or at any time in the script. 
+
+				<pre class="brush: js;">
+					
+					//	At instantiation //
+
+					var $el = $('.myInput').Pure('Input', {
+						plugins : {
+							Autocomplete : {
+								src	: 'ajax.php'
+							}
+						}
+					});
+
+					// After instantiation //
+
+					$('.myInput').Pure('Input:Autocomplete', {
+						src : 'ajax.php'
+					});
+
+				</pre>
+
+				Over and above the public methods interface, you have access to certain
+				<strong>listeners</strong>, that is, methods that are executed when certain events occur.
+				
+				<pre class="brush: js;">
+
+					//	At instantiation //
+
+					var $el = $('.myInput').Pure('Input', {
+						on	: {
+							// Listens for a change in value //
+							changeVal : function( val ){
+								alert('Value is different!');
+							}
+						}
+					});
+
+					// Overwrite the method after instantiation //
+					
+					$('.myInput').Pure('Input', {
+						on	: {
+							// The listener always has the context (this)
+							// of the public interface
+							changeVal : function( val ){
+								if( val == 'Hulk' ){
+									this.destroy();
+								}
+							}
+						}
+					});
+
+				</pre>
+
+				<a name="Styling"></a>
+				<p><strong>Styling</strong></p>
+
+				<p>Pure input inherits the class names you give to the input element. You may want to custom style the other plugins, like Autocomplete. Consult the pure-input-1.0.css stylesheet which contains comments you can follow to custom-style these plugins.</p>
+
+				<a name="APIDocumentation"></a>
+				<h1>API Documentation</h1>
+
+
+				<a name="GlobalMethods"></a>
+				<p><strong>Global Methods</strong></p>
+
+				<p>Each plugin contains the following methods in its public interface.</p>
+				
+				<table class="options __pluginOptions">
+					<tr>
+						<td>Method</td>
+						<td>Arguments</td>
+						<td>Returns</td>
+					</tr>
+					<tr>
+						<td>options</td>
+						<td>[ options | string ]</td>
+						<td>Context or Option(s)</td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							Get or set the options object of the plugin.<br />
+							<p class=""><strong>options</strong> - overwrites the specified options with new ones.</p>
+							<p class=""><strong>string</strong> - returns a specific option.</p>
+						</td>
+					</tr>
+					<tr>
+						<td>attr</td>
+						<td>[ attribute, value ]</td>
+						<td>value<br />Context</td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							Get the attribute of the input (if second argument is null).<br />
+							<p class=""><strong>attribute</strong> - the attribute to get or set.</p>
+							<p class=""><strong>value</strong> - the value to apply to the attribute.</p>
+							<p>Supported attributes are plugin specific. This method may be redundant in some cases.</p>
+						</td>
+					</tr>
+					<tr>
+						<td>get</td>
+						<td>none</td>
+						<td>plugin instance</td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							<p>Get the actual instance of the plugin, for deeper manipulation.</p>
+						</td>
+					</tr>
+					<tr>
+						<td>destroy</td>
+						<td>none</td>
+						<td>true</td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							<p>Destroy the instance, removing any events and elements that were created for its purpose.
+								Restores the element it was applied to to its former state (if applicable).</p>
+						</td>
+					</tr>
+				</table>
+				<a name="Input"></a>
+				<h1>Input</h1>
+				<a name="InputOptions"></a>
+				<p> <strong>Options</strong></p>
+				
+				<table class="options __pluginOptions">
+					<tr>
+						<td>Option</td>
+						<td>Type</td>
+						<td>Default</td>
+					</tr>
+					<tr>
+						<td>hint</td>
+						<td>String</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td colspan="3">An initial "value" to show when input is awaiting use.</td>
+					</tr>
+					<tr>
+						<td>value</td>
+						<td>String</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td colspan="3">Initial value of input.</td>
+					</tr>
+					<tr>
+						<td>height</td>
+						<td>Integer</td>
+						<td>20</td>
+					</tr>
+					<tr>
+						<td colspan="3">The height the actual input element will be, even while growing. Usually near to css font-size.</td>
+					</tr>
+					<tr>
+						<td>autogrow</td>
+						<td>Boolean</td>
+						<td>false</td>
+					</tr>
+					<tr>
+						<td colspan="3">The input may grow dynamically as the value changes.</td>
+					</tr>
+					<tr>
+						<td>minWidth</td>
+						<td>Integer</td>
+						<td>10</td>
+					</tr>
+					<tr>
+						<td colspan="3">The smallest width the Input can be if its size is dynamic.</td>
+					</tr>
+					<tr>
+						<td>maxWidth</td>
+						<td>Integer</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td colspan="3">The maximum width the Input can be if its size is dynamic.</td>
+					</tr>
+					<tr>
+						<td>maxHeight</td>
+						<td>Integer</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td colspan="3">The maximum height the Input can be if its size is dynamic. Thereafter, it will become scrollable.</td>
+					</tr>
+					<tr>
+						<td>maxLength</td>
+						<td>Integer</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td colspan="3">The maximum number of characters.</td>
+					</tr>
+					<tr>
+						<td>plugins</td>
+						<td>Object</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td colspan="3">An object listing associated plugins and their respective options.</td>
+					</tr>
+					<tr>
+						<td>on</td>
+						<td>Object</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td colspan="3">An object listing associated listeners and their behaviour.</td>
+					</tr>
+				</table>
+
+				
+
+				<pre class="brush: js;">
+					// Naturally, you group these options
+					// together in a single object...
+
+					var options = {
+						hint		: 'Type to start searching...',
+						value		: 'This is an initial value',
+						height		: 20,
+						autogrow	: true,
+						minWidth	: 10,
+						maxHeight	: 100,
+						maxWidth	: 200,
+						maxLength 	: 2000,
+						plugins		: {
+							Autocomplete : { /* Options */ }
+						},
+						listeners	: {
+							on		: changeVal( ){}
+						}
+					};
+
+					// ...and apply them to your instance construction //
+
+					$( 'input.superVillains' ).Pure( 'Input', options );
+
+				</pre>
+
+				<a name="InputListeners"></a>
+				<p> <strong>Listeners</strong></p>
+				
+				<table class="options __pluginOptions">
+					<tr>
+						<td>Listener</td>
+						<td>Arguments</td>
+						<td>Returns</td>
+					</tr>
+					<tr>
+						<td>change</td>
+						<td>[value]</td>
+						<td>Context</td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							Listens for a change in the input's value.<br />
+							<p class=""><strong>value</strong> - the current value of the input. Occurs on each keypress event.</p>
+							<p><strong>Example:</strong></p>
+							<pre class="brush: js;">
+
+								// Listen for a change in value and log it //
+
+								$( 'input.superVillains' ).Pure( 'Input', {
+									on : {
+										change : function( val ){
+											console.log( val );
+										}
+									}
+								});
+
+							</pre>
+						</td>
+					</tr>
+				</table>
+				
+				
+				<a name="InputMethods"></a>
+				<p> <strong>Methods</strong></p>
+				<p>First get back the methods interface: </p>
+				
+				<pre class="brush: js;">
+
+					// Construct the Input //
+
+					$( 'input.superHeroes' ).Pure( 'Input', {
+						hint : 'Superheroes'
+					});
+
+					
+					// Access the public methods interface //
+
+					var input = $( 'input.superHeroes' ).Pure( 'Input' );
+
+				</pre>
+				<p>Then you can execute a method: </p>
+				<pre class="brush: js;">
+					input[ methodName ]( handler );
+				</pre>
+				
+				<table class="options __pluginOptions">
+					<tr>
+						<td>Method</td>
+						<td>Arguments</td>
+						<td>Returns</td>
+					</tr>
+					<tr>
+						<td>focus</td>
+						<td>[ handler ]</td>
+						<td>Context</td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							Focus on the input (if arguments are empty).<br />
+							<p class=""><strong>handler</strong> - run this code on focus.</p>
+						</td>
+					</tr>
+					<tr>
+						<td>blur</td>
+						<td>[ handler ]</td>
+						<td>Context</td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							Blur the input (if arguments are empty).<br />
+							<p class=""><strong>handler</strong> - run this code on blur.</p>
+						</td>
+					</tr>
+					<tr>
+						<td>val</td>
+						<td>[ value ]</td>
+						<td>value <br />Context</td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							Get the value of the input (if arguments are empty).<br />
+							<p class=""><strong>value</strong> - set the value.</p>
+						</td>
+					</tr>
+					<tr>
+						<td>setHint</td>
+						<td>[ hint ]</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							Sets the value of the hint and renders it. Overwrites the hint option.<br />
+							<p class=""><strong>hint</strong> - the string to use as a hint.</p>
+						</td>
+					</tr>
+					<tr>
+						<td>attr</td>
+						<td>[ attribute, value ]</td>
+						<td>value<br />Context</td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							Get the attribute of the input (if second argument is null).<br />
+							<p class=""><strong>attribute</strong> - the attribute to get or set.</p>
+							<p class=""><strong>value</strong> - the value to apply to the attribute.</p>
+							<p>Supported attributes:</p> <em>disabled, readonly</em>
+						</td>
+					</tr>
+				</table>
+				
+				<p>Should you wish to manipulate the plugin on a deeper level, you can access the instance using .get() </p>
+
+				<pre class="brush: js;">
+
+					// Get the Input instance //
+
+					var inst	= input.get(),
+						view	= inst.view;
+					
+					// Access the parent Input element (jQuery) //
+
+					console.log( view.el );
+
+
+					// Access the Input's elements //
+
+					console.log( view.elements );
+					
+				</pre>
+				<a name="InputExamples"></a>
+				<p><strong>Examples</strong></p>
+				<input class="__example1 input" />
+				<div class="example1code">
+					<pre class="brush: js;">
+						$( 'input.__example1').Pure('Input', {
+							hint		: 'Describe your personality in 300 words',
+							height 		: 20,
+							autogrow 	: true,
+							maxHeight 	: 100,
+							on			: {
+								change : function( val ){
+
+									if( val.length > 300 && ! alerted ){
+										alert('Okay, okay!');
+										alerted = true;
+										this.attr('disabled', true );
+										selfDestruct( this );
+									}
+
+									function selfDestruct( input ){
+										input.val('This input will self destruct in 3 seconds.');
+										setTimeout( function(){
+											input.destroy();
+										}, 3000 );
+									}
+								}
+							}
+						});
+
+						var methods = $( '.__example1').Pure('Input');
+
+						methods.focus ( function(){
+							this.setHint('The input will disable and self-destruct\
+											when you reach 300 characters.');
+						});
+					</pre>
+				</div>
+				<a name="Autocomplete"></a>
+				<h1>Input : Autocomplete</h1>
+				<a name="AutocompleteOptions"></a>
+				<p><strong>Options</strong></p>
+				
+				<table class="options __pluginOptions">
+					<tr>
+						<td>Option</td>
+						<td>Type</td>
+						<td>Default</td>
+					</tr>
+					<tr>
+						<td>src</td>
+						<td>String, Function, Array</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							<p>The source to use for results. The source can either be a string indicating a URL, a function which will create the results, or an array of local results.</p>
+							<p><strong>Example:</strong></p>
+							<pre class="brush: js;">
+
+							// As a String //
+
+							$( 'input.superHeroes').Pure('Input:Autocomplete', {
+								src : 'ajax.php?type=superheroes'
+							});
+
+
+							// As a function for result delivery //
+
+							$( 'input.superHeroes').Pure('Input:Autocomplete', {
+								src : function( searchVal, onComplete ){
+
+									// Perform sync or async tasks
+									// Then run onComplete
+
+									var results = [];
+									onComplete( results );
+								}
+							});
+
+							var localResults = [];
+
+							$( 'input.superHeroes').Pure('Input:Autocomplete', {
+								src : localResults
+							});
+
+					</pre>
+							<p><strong>Dependencies</strong></p>
+							<p><em>You should configure the mapSrc function as indicated below.</em></p>
+						</td>
+					</tr>
+					<tr>
+						<td>mapSrc</td>
+						<td>Function</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							<p>This function is required to parse each result to allow for templating.
+									The function will be run through each iteration of the results, returning the necessary data to create the template.
+									You must <strong>always</strong> return an object with an id and value.</p>
+							<p><strong>Example:</strong></p>
+							<pre class="brush: js;">
+
+								$( 'input.superHeroes').Pure('Input:Autocomplete', {
+									mapSrc		: function( i ){
+										return {
+											id 		: i.userID,
+											value	: i.fullName
+											/* More fields... */
+										};
+									}
+								});
+
+								// mapSrc is now used in iterating
+								// through a result set like this one
+								var results = [{
+									userID		: 125542354,
+									fullName	: 'Darth Maul'
+								}];
+
+							</pre>
+						</td>
+					</tr>
+					<tr>
+						<td>mapResults</td>
+						<td>Object</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							<p>This object is not necessary unless you are returning a multi-dimensional result set. It allows you to specify a categorized result set, and what to title each category.</p>
+							<p><strong>Example:</strong></p>
+							<pre class="brush: js;">
+
+								$( 'input.superHeroes').Pure('Input:Autocomplete', {
+									mapResults : {
+										family	: 'Family',
+										friends : 'Friends'
+									}
+								});
+
+								// This map now expects a result like this one //
+
+								var result = {
+									family : [{
+										name	: 'Darth Vader'
+									],
+									friends : [{
+										name	: 'Han Solo'
+									}]
+								}
+
+							</pre>
+						</td>
+					</tr>
+					<tr>
+						<td>minResults</td>
+						<td>Integer</td>
+						<td>30</td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							The minimum number of results required to skip the running of an asynchronous call (if applicable).
+						</td>
+					</tr>
+					<tr>
+						<td>maxResults</td>
+						<td>Integer</td>
+						<td>30</td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							The maximum number of results to show at any given time.
+						</td>
+					</tr>
+					<tr>
+						<td>searchTimeout</td>
+						<td>Integer</td>
+						<td>500</td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							The length of the delay in milliseconds the plugin will wait after the last key press before it begins searching asynchronously (if applicable).
+						</td>
+					</tr>
+					<tr>
+						<td>templates</td>
+						<td>Object</td>
+						<td>Object (see below)</td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							<p>The templates object contains the strings necessary for output, and can be user-defined.</p>
+							<p><strong>Example:</strong> (defaults)</p>
+							<pre class="brush: js;">
+								$( 'input.superHeroes').Pure('Input:Autocomplete', {
+									templates 	: {
+
+										// Different states of Autocomplete //
+										state 	: {
+											'start' 				: 'Type to start searching...',
+											'startMention' 			: 'Select an item to mention...',
+											'searching' 			: 'Searching...',
+											'tokenizer_delete'		: 'Press Backspace or Delete to remove',
+											'token_limit_reached'	: 'Selection limit reached.\
+																		Delete items to continue.'
+										},
+
+										// The result item //
+										result	: '{value}',
+
+										// The result category (if applicable) //
+										category : '{value}'
+									}
+								});
+							</pre>
+						</td>
+					</tr>
+					<tr>
+						<td>on</td>
+						<td>Object</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td colspan="3">An object listing associated listeners and their behaviour.</td>
+					</tr>
+				</table>
+
+				<a name="AutocompleteListeners"></a>
+				<p><strong>Listeners</strong> </p>
+
+				<table class="options __pluginOptions">
+					<tr>
+						<td>Listener</td>
+						<td>Arguments</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>listItemSelect</td>
+						<td>[ listItem ]</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							Listens for the selection of a list item.<br />
+							<p class=""><strong>listItem</strong> - an object containing the result data (parsed by options.mapSrc).</p>
+							<p><strong>Example:</strong></p>
+							<pre class="brush: js;">
+
+								// Listen for the selection of data and log it //
+
+								$( 'input.superVillains' ).Pure( 'Input:Autocomplete', {
+									on : {
+										listItemSelect : function( listItem ){
+											console.log( listItem );
+										}
+									}
+								});
+
+							</pre>
+						</td>
+					</tr>
+					<tr>
+						<td>results</td>
+						<td>[ type, resultSet ]</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							Listens for results found either locally or remotely.<br />
+							<p class=""><strong>type</strong> - a String representing the type of transaction ('sync', 'async').</p>
+							<p class=""><strong>resultSet</strong> - an object containing the data that was found during the transaction.</p>
+							<p><strong>Example:</strong></p>
+							<pre class="brush: js;">
+
+								// Listen for the discovery of results and log it //
+
+								$( 'input.superVillains' ).Pure( 'Input:Autocomplete', {
+									on : {
+										results : function( type, resultSet ){
+											console.log( type, resultSet );
+										}
+									}
+								});
+
+							</pre>
+						</td>
+					</tr>
+					<tr>
+						<td>noResults</td>
+						<td>[ type ]</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							Listens for empty results either locally or remotely.<br />
+							<p class=""><strong>type</strong> - a String representing the type of transaction ('sync', 'async').</p>
+							<p><strong>Example:</strong></p>
+							<pre class="brush: js;">
+
+								// Listen for failure to find results and log it //
+
+								$( 'input.superVillains' ).Pure( 'Input:Autocomplete', {
+									on : {
+										noResults : function( type ){
+											console.log( type );
+										}
+									}
+								});
+
+							</pre>
+						</td>
+					</tr>
+				</table>
+				<a name="AutocompleteMethods"></a>
+				<p><strong>Methods</strong></p>
+
+				<table class="options __pluginOptions">
+					<tr>
+						<td>Method</td>
+						<td>Arguments</td>
+						<td>Returns</td>
+					</tr>
+					<tr>
+						<td>getHistory</td>
+						<td>none</td>
+						<td>historical data</td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							<p>Get the current search results history.</p>
+						</td>
+					</tr>
+					<tr>
+						<td>setHistory</td>
+						<td>Object</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							<p>Set the current search results history.</p>
+						</td>
+					</tr>
+					<tr>
+						<td>clearHistory</td>
+						<td>none</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							<p>Clear the current search results history.</p>
+						</td>
+					</tr>
+				</table>
+
+				<a name="AutocompleteExamples"></a>
+				<p><strong>Examples</strong></p>
+					<input class="input __example2" />
+					<button class="__example2 disable">Disable Autocomplete</button>
+					<button class="__example2 enable">Enable Autocomplete</button>
+					<pre class="brush: js;">
+					
+						// The initial Input binding //
+
+						$( 'input.__example2').Pure('Input', {
+							hint		: 'Search for "Batman"',
+							height 		: 20,
+							autogrow 	: true,
+							maxHeight 	: 100
+						});
+
+						// A local source of results //
+
+						var src = [
+							{ id : 1, name	: 'Batman Returns (1992)'},
+							{ id : 2, name	: 'Batman Forever (1995)'},
+							{ id : 3, name	: 'Batman and Robin (1997)'},
+							{ id : 4, name	: 'Batman Begins (2005)' }
+						];
+
+						// The default set of options for autocomplete //
+						
+						var opts = {
+							src			: src,
+							mapSrc		: function( i ){
+								return {
+									id : i.id,
+									value : i.name
+								};
+							},
+							on : {
+								listItemSelect : function( listItem ){
+									alert( 'You chose ' + listItem.name );
+								}
+							}
+						};
+						
+						// Bind the options //
+
+						$( 'input.__example2').Pure('Input:Autocomplete', opts );
+
+						// Get the methods interface //
+
+						var auto = $( 'input.__example2').Pure('Input:Autocomplete');
+
+						
+						// Buttons behaviour //
+
+						$('button.__example2.disable').click( function(){
+							auto.destroy();
+						});
+
+						$('button.__example2.enable').click( function(){
+							$( 'input.__example2').Pure('Input:Autocomplete', opts );
+							auto = $( 'input.__example2').Pure('Input:Autocomplete');
+						});
+					</pre>
+
+					<p>Expanding on this example, we allow for the ability to change the source, by reassigning the options
+					and using the history functions. </p>
+					
+					<input class="input __example3" />
+					<button class="__example3">Change Remote Source (to Facebook)</button>
+					
+					<pre class="brush : js;">
+						
+						// A source handler that uses the Facebook Graph API and JSONP //
+
+						var fbSrc = function( val, onComplete ){
+
+							var callback = 'fbcallback' + new Date().getTime();
+							$.getScript( 'https://graph.facebook.com/search?q='
+											+ val + '&callback=' + callback + '&type=page' );
+
+							window[ callback ] = function( response ){
+								onComplete( response.data );
+								window[ callback ] = undefined;
+							}
+							
+						};
+						
+						$( 'input.__example3').Pure('Input', {
+							hint		: 'Search for "Batman"',
+							height 		: 20,
+							autogrow 	: true,
+							maxHeight 	: 100,
+							plugins		: {
+								Autocomplete : opts // Bind previous options //
+							}
+						});
+
+						var input = $( 'input.__example3').Pure('Input'),
+							srcUpdated;
+
+
+						// Button click changes the source and clears previous history //
+
+						$('button.__example3').click( function(){
+
+							if( srcUpdated ){
+								return;
+							}
+
+							$( 'input.__example3').Pure('Input:Autocomplete', {
+								src : fbSrc
+							});
+
+							var auto = $( 'input.__example3').Pure('Input:Autocomplete');
+
+							auto.clearHistory();
+
+							input.setHint('Search for "Batman" on Facebook');
+
+							srcUpdated = true;
+
+						});
+
+					</pre>
+					
+					<p> Example of a multi-dimensional result set, categorized. </p>
+					
+					<input class="input __example4" />
+					
+					<pre class="brush : js;">
+						$('input.__example4').Pure( 'Input', {
+							hint	: 'Search for "man" or "the"...',
+							plugins	: {
+								Autocomplete : {
+									src		: 'javascript/example4.json',
+									mapSrc	: function( i ){
+										return {
+											id		: i.id,
+											value	: i.name
+										}
+									},
+									mapResults : {
+										avengers		: "Avengers",
+										justice_league	: "Justice League"
+									}
+								}
+							}
+						});
+					</pre>
+					
+					<a name="Mentioner"></a>
+					<h1>Input : Autocomplete : Mentioner</h1>
+					<a name="MentionerOptions"></a>
+					<p><strong>Options</strong></p>
+					
+					
+					<table class="options __pluginOptions">
+						<tr>
+							<td>Option</td>
+							<td>Type</td>
+							<td>Default</td>
+						</tr>
+						<tr>
+							<td>mChar</td>
+							<td>String</td>
+							<td>@</td>
+						</tr>
+						<tr>
+							<td colspan="3">The character that will trigger a search in Autocomplete.</td>
+						</tr>
+						<tr>
+							<td>on</td>
+							<td>Object</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td colspan="3">An object listing associated listeners and their behaviour.</td>
+						</tr>
+					</table>
+
+					<a name="MentionerListeners"></a>
+					<p><strong>Listeners</strong></p>
+
+					<table class="options __pluginOptions">
+						<tr>
+							<td>Method</td>
+							<td>Arguments</td>
+							<td>Returns</td>
+						</tr>
+						<tr>
+							<td>addMention</td>
+							<td>[ data ]</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td colspan="3">
+								<p>Listens for the addition of a mention to the input, returns selected data object.</p>
+								<p><strong>Example</strong></p>
+								<pre class="brush : js;">
+
+									$('.myInput').Pure('Input:Autocomplete:Mentioner', {
+										on : {
+											addMention : function( data ){
+												alert( 'You mentioned ' + data.name );
+											}
+										}
+									});
+
+								</pre>
+							</td>
+						</tr>
+					</table>
+
+					<a name="MentionerMethods"></a>
+					<p><strong>Methods</strong></p>
+					
+					<table class="options __pluginOptions">
+						<tr>
+							<td>Method</td>
+							<td>Arguments</td>
+							<td>Returns</td>
+						</tr>
+						<tr>
+							<td>getMentions</td>
+							<td></td>
+							<td>Array of mentioned objects</td>
+						</tr>
+						<tr>
+							<td colspan="3">
+								<p>Get the current mentions of the input value.</p>
+							</td>
+						</tr>
+					</table>
+
+					<a name="MentionerExamples"></a>
+					<p><strong>Examples</strong></p>
+					
+					<input type="text" class="input __example6" />
+
+					<pre class="brush : js;">
+
+						$('input.__example6').Pure( 'Input', {
+							hint	: 'Search for "man" or "the"...',
+							plugins		: {
+								Autocomplete : {
+									src		: 'javascript/example4.json',
+									mapSrc	: function( i ){
+										return {
+											id		: i.id,
+											value	: i.name
+										}
+									},
+									mapResults : {
+										avengers		: "Marvel",
+										justice_league	: "Justice League"
+									},
+									plugins		: {
+
+										// Initialize the Mentioner
+										// Listen for new mentions 
+										Mentioner : {
+											on : {
+												addMention : function( data ){
+													alert( 'You mentioned ' + data.name );
+												}
+											},
+											mChar : '#'
+										}
+
+									}
+								}
+							},
+
+							on	: {
+								change : function(){
+									console.log( mentioner.getMentions() );
+								}
+							}
+						});
+
+						var mentioner	= $('input.__example6').Pure('Input:Autocomplete:Mentioner');
+
+					</pre>
+
+					<a name="Tokenizer"></a>
+					<h1>Input : Tokenizer </h1>
+
+					<a name="TokenizerOptions"></a>
+					<p><strong>Options</strong></p>
+					
+					<table class="options __pluginOptions">
+						<tr>
+							<td>Option</td>
+							<td>Type</td>
+							<td>Default</td>
+						</tr>
+						<tr>
+							<td>limit</td>
+							<td>Integer</td>
+							<td>Infinity</td>
+						</tr>
+						<tr>
+							<td colspan="3">The maximum number of tokens that can be selected within the input.</td>
+						</tr>
+						<tr>
+							<td>on</td>
+							<td>Object</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td colspan="3">An object listing associated listeners and their behaviour.</td>
+						</tr>
+					</table>
+
+					<a name="TokenizerListeners"></a>
+					<p><strong>Listeners</strong></p>
+					
+					<table class="options __pluginOptions">
+						<tr>
+							<td>Listener</td>
+							<td>Arguments</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>addToken</td>
+							<td>[ data, token ]</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td colspan="3">Listens for the addition of a token to the input.
+								<p><strong>data</strong> - an object containing the token's data</p>
+								<p><strong>token</strong> - the public methods interface for the token</p>
+								<p><strong>Example:</strong></p>
+								<pre class="brush :js">
+
+									$('.myInput').Pure('Input:Tokenizer', {
+										on  : {
+											addToken : function( data, token ){
+												if( data.required ){
+												
+													// Prevent the token from being removed //
+													token.attr( 'readonly', true );
+												}
+											}
+										}
+									});
+
+								</pre>
+							</td>
+						</tr>
+						<tr>
+							<td>removeToken</td>
+							<td>[ data, token ]</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td colspan="3">Listens for the removal of a token from the input.
+								<p><strong>data</strong> - an object containing the token's data</p>
+								<p><strong>token</strong> - the public methods interface for the token</p>
+								<p><strong>Example:</strong></p>
+								<pre class="brush :js">
+
+									$('.myInput').Pure('Input:Tokenizer', {
+										on  : {
+											removeToken : function( data, token ){
+												if( data.name == 'Captain America' ){
+													alert( 'There is no Avengers without Captain America!' );
+													
+													// Reference the Tokenizer interface //
+													this.clearTokens();
+												}
+											}
+										}
+									});
+
+								</pre>
+							</td>
+						</tr>
+						<tr>
+							<td>clickToken</td>
+							<td>[ data, token ]</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td colspan="3">Listens for a click event on a token within the input.
+								<p><strong>data</strong> - an object containing the token's data</p>
+								<p><strong>token</strong> - the public methods interface for the token</p>
+								<p><strong>Example:</strong></p>
+								<pre class="brush :js">
+									
+									$('.myInput').Pure('Input:Tokenizer', {
+										on  : {
+											clickToken : function( data, token ){
+												var modified = $.extend( data, { /* Added elements */ });
+												token.data( modified );
+											}
+										}
+									});
+
+								</pre>
+							</td>
+						</tr>
+					</table>
+
+					<a name="TokenizerMethods"></a>
+					<p><strong>Methods</strong></p>
+
+					<table class="options __pluginOptions">
+						<tr>
+							<td>Method</td>
+							<td>Arguments</td>
+							<td>Returns</td>
+						</tr>
+						<tr>
+							<td>getTokens</td>
+							<td></td>
+							<td>Array of tokens</td>
+						</tr>
+						<tr>
+							<td colspan="3">
+								<p>Get the tokens of the input as an Array.</p>
+							</td>
+						</tr>
+						<tr>
+							<td>setTokens</td>
+							<td>Array</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td colspan="3">
+								<p>Set the tokens of the input.</p>
+							</td>
+						</tr>
+						<tr>
+							<td>clearTokens</td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td colspan="3">
+								<p>Remove all the tokens from the input.</p>
+							</td>
+						</tr>
+						<tr>
+							<td>getTokenData</td>
+							<td></td>
+							<td>Array of all the tokens' data</td>
+						</tr>
+						<tr>
+							<td colspan="3">
+								<p>Get each token's data object pushed into a single array.</p>
+							</td>
+						</tr>
+						<tr>
+							<td>: remove </td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td colspan="3">
+								<p>Remove the token. This method applies to a single token, for example a single item extracted from the array returned by getTokens</p>
+							</td>
+						</tr>
+						<tr>
+							<td>: attr</td>
+							<td>[ attribute, boolean ]</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td colspan="3">
+								<p>Set the token to "readonly". This allows the user to navigate around it, but does not allow removal. This method applies to a single token.</p>
+							</td>
+						</tr>
+						<tr>
+							<td>: data</td>
+							<td>[ data ]</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td colspan="3">
+								<p>Get or set the data of the token. It may be useful to store additional data than just what is collected from Autocomplete, for example, if the user is able to modify the data. This method applies to a single token. </p>
+							</td>
+						</tr>
+					</table>
+
+					<a name="TokenizerExamples"></a>
+					<p><strong>Examples</strong></p>
+					
+					<input type="text" class="input __example5" />
+					<button class="__example5">Single Selection</button>
+					<pre class="brush : js;">
+						$('input.__example5').Pure( 'Input', {
+							hint	: 'Search for "man" or "the"...',
+							plugins		: {
+								Tokenizer	: {
+									limit	: 5,
+									on		: {
+										addToken	: function( data, token ){
+											
+											for( var x in tokens ){
+
+												// Perform some kind of object comparison
+												// to prevent duplicates
+
+												if( isEqual( tokens[x].data(), token.data() ) ){
+													token.remove();
+													break;
+												}
+
+												tokens = this.getTokens();
+
+											}
+										},
+										removeToken		: function(){
+											tokens = this.getTokens();
+										}
+									}
+								}
+							}
+						});
+
+						var tokenizer	= $('input.__example5').Pure('Input:Tokenizer');
+
+						tokenizer.setTokens([{
+							name	: 'Ironman',
+							id		: 1
+						}]);
+
+						var tokens = tokenizer.getTokens();
+						
+						
+						$('button.__example5').click( function(){
+							tokenizer.options({limit : 1});
+						});
+
+					</pre>
+					
+					<a name="Validation"></a>
+					<h1>Input : Validation</h1>
+					
+					<a name="ValidatorOptions"></a>
+					<p><strong>Options</strong></p>
+					
+					<table class="options __pluginOptions">
+						<tr>
+							<td>Option</td>
+							<td>Type</td>
+							<td>Default</td>
+						</tr>
+						<tr>
+							<td>filters</td>
+							<td>Array</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td colspan="3">
+								<p>An array of custom functions that handle validation of the input. Each function has the value of the input, and tokens (if applicable) as arguments, and must return an object as its format, see below.</p>
+								<pre class="brush :js;">
+									function( value, tokens ){
+										return {
+											success : false,
+											error	: 'Failed to validate this field'
+										};
+									}
+								</pre>
+							</td>
+							
+						</tr>
+						<tr>
+							<td>delay</td>
+							<td>Integer</td>
+							<td>0</td>
+						</tr>
+						<tr>
+							<td colspan="3">The delay after the <em>keypress</em> event before validation is run.</td>
+						</tr>
+						<tr>
+							<td>events</td>
+							<td>Array</td>
+							<td>['blur', 'keypress']</td>
+						</tr>
+						<tr>
+							<td colspan="3">An array of events indicating when validation is to occur. Supported events are <em>blur, keypress</em>.</td>
+						</tr>
+						<tr>
+							<td>on</td>
+							<td>Object</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td colspan="3">An object listing associated listeners and their behaviour.</td>
+						</tr>
+					</table>
+					
+					<a name="ValidatorListeners"></a>
+					<p><strong>Listeners</strong></p>
+					
+					<table class="options __pluginOptions">
+						<tr>
+							<td>Listener</td>
+							<td>Arguments</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>validate</td>
+							<td>[ valid ]</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td colspan="3">Listens for the validation of the input based on validation methods and events defined in options.
+								<p><strong>valid</strong> - boolean describing state of input's validity</p>
+								<p><strong>Example:</strong></p>
+								<pre class="brush :js">
+									
+									$('.myInput').Pure('Input:Validate', {
+										on  : {
+											validate : function( valid ){
+												if( ! valid ){
+													$('.myInput').addClass('warning');
+												} else {
+													$('.myInput').removeClass('warning');
+												}
+											}
+										}
+									});
+
+								</pre>
+							</td>
+						</tr>
+						<tr>
+							<td>clear</td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td colspan="3">Listens for the clearing of the input of its value and tokens.
+								<p><strong>Example:</strong></p>
+								<pre class="brush :js">
+									
+									$('.myInput').Pure('Input:Validate', {
+										on  : {
+											clear : function(){
+												$('.myInput').removeClass('warning');
+											}
+										}
+									});
+
+								</pre>
+							</td>
+						</tr>
+					</table>
+					
+					<a name="ValidatorMethods"></a>
+					<p><strong>Methods</strong></p>
+
+					<table class="options __pluginOptions">
+						<tr>
+							<td>Method</td>
+							<td>Arguments</td>
+							<td>Returns</td>
+						</tr>
+						<tr>
+							<td>validate</td>
+							<td></td>
+							<td>Object</td>
+						</tr>
+						<tr>
+							<td colspan="3">
+								<p>Validate the input according to filters defined in options. Useful for applying during submission of a form. Returns an object specifying validity and the error if it's invalid. </p>
+								<pre class="brush :js;">
+									var validator = $('.myInput').Pure('Input:Validator');
+									var obj = validator.validate();
+									
+									/*	obj ==
+									*
+									*	{
+									*		valid	: false,
+									*		error	: 'Not a valid email address.'
+									*	}
+									*/
+								</pre>
+							</td>
+						</tr>
+					</table>
+					<a name="ValidatorExamples"></a>
+					<p><strong>Examples</strong></p>
+					
+					<input class="__example7 input" />
+					<pre class="brush :js">
+
+						$('input.__example7').Pure( 'Input', {
+							plugins		: {
+								Tokenizer : {
+									on		: {
+										addToken	: function(){
+											$('input.__example7').Pure('Input:Validator').validate();
+										}
+									},
+									limit	: 1
+								},
+								Validator : {
+									filters : [
+										function( value, tokens ){
+											var valid = false;
+											for( var x in tokens ){
+												if( tokens[x].data().name == 'Ironman' ){
+													valid = true;
+													break;
+												}
+											}
+
+											return {
+												valid	: valid,
+												error	: 'You did not choose Ironman.'
+											}
+										}
+									],
+
+									// Change element styling on validation //
+									on		: {
+										validate : function( valid, msg ){
+											var $wrapper = $('div.pureui-8.pureui-input-mainWrapper')
+															.first();
+											if( ! valid ){
+												$wrapper.addClass('error');
+											} else {
+												$wrapper.removeClass('error');
+											}
+										},
+										clear	: function(){
+											var $wrapper = $('div.pureui-8.pureui-input-mainWrapper')
+															.first();
+											$wrapper.removeClass('error');
+										}
+									},
+
+									// Reset events - validation can only occur manually. //
+									events : []
+								}
+							}
+						});
+
+					</pre>
+					<style type="text/css">
+						.error {
+							border : 1px solid red !important;
+						}
+					</style>
+					<div class="changelog">
+						<a name="Changelog"></a>
+						<h1>Changelog</h1>
+						<a name="1.0.0"></a>
+						<strong>May 2012</strong>
+						<ul>
+							<li>Input 1.0.0 Released.</li>
+						</ul>
+					</div>
+
+			</div>
+			
+			<div class="right-wrapper">
+				<div class="feature-block">
+					
+					<h1>Basic Topics</h1>
+					<ul>
+						<li><a href="#Introduction">Introduction</a></li>
+						<li><a href="#Installation">Installation</a></li>
+						<li><a href="#Implementation">Implementation</a></li>
+						<li><a href="#Styling">Styling</a></li>
+					</ul>
+					<h1>API Documentation</h1>
+
+					<ul>
+						<li><a href="#GlobalMethods">Global Methods</a></li>
+						<li>
+							<ul>
+								<li><a href="#Input">Input</a></li>
+								<li class="group">
+									<ul>
+										<li><a href="#InputOptions">Options</a></li>
+										<li><a href="#InputListeners">Listeners</a></li>
+										<li><a href="#InputMethods">Methods</a></li>
+										<li><a href="#InputExamples">Examples</a></li>
+									</ul>
+								</li>
+								<li><a href="#Autocomplete">Autocomplete</a></li>
+								<li class="group">
+									<ul>
+										<li><a href="#AutocompleteOptions">Options</a></li>
+										<li><a href="#AutocompleteListeners">Listeners</a></li>
+										<li><a href="#AutocompleteMethods">Methods</a></li>
+										<li><a href="#AutocompleteExamples">Examples</a></li>
+										<li><a href="#Mentioner">Mentioner</a></li>
+										<li class="group">
+											<ul>
+												<li><a href="#MentionerOptions">Options</a></li>
+												<li><a href="#MentionerListeners">Listeners</a></li>
+												<li><a href="#MentionerMethods">Methods</a></li>
+												<li><a href="#MentionerExamples">Examples</a></li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+								<li><a href="#Tokenizer">Tokenizer</a></li>
+								<li class="group">
+									<ul>
+										<li><a href="#TokenizerOptions">Options</a></li>
+										<li><a href="#TokenizerListeners">Listeners</a></li>
+										<li><a href="#TokenizerMethods">Methods</a></li>
+										<li><a href="#TokenizerExamples">Examples</a></li>
+									</ul>
+								</li>
+								<li><a href="#Tokenizer">Validator</a></li>
+								<li class="group">
+									<ul>
+										<li><a href="#ValidatorOptions">Options</a></li>
+										<li><a href="#ValidatorListeners">Listeners</a></li>
+										<li><a href="#ValidatorMethods">Methods</a></li>
+										<li><a href="#ValidatorExamples">Examples</a></li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+					</ul>
+					<h1>Changelog</h1>
+					<ul>
+						<li><a href="#1.0.0">May 2012</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

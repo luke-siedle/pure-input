@@ -1,0 +1,29 @@
+{
+	"avengers" : [{
+		"id"	: 1,
+		"name"	: "Ironman"
+	},{
+		"id"	: 2,
+		"name"	: "Captain America"
+	},{
+		"id"	: 3,
+		"name"	: "The Incredible Hulk"
+	},{
+		"id"	: 4,
+		"name"	: "Thor"
+	}],
+
+	"justice_league" : [{
+		"id"	: 1,
+		"name"	: "Batman"
+	},{
+		"id"	: 2,
+		"name"	: "Superman"
+	},{
+		"id"	: 3,
+		"name"	: "Aquaman"
+	},{
+		"id"	: 4,
+		"name"	: "The Flash"
+	}]
+}

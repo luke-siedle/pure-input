@@ -1,0 +1,142 @@
+
+body, textarea {
+	margin : 0px;
+	font-family : "Calibri", Arial;
+	font-size : 16px;
+}
+
+ul {
+	list-style-type:none;
+	padding: 0px;
+	margin : 0px;
+	padding-left:0px;
+}
+
+ul li {
+	margin : 0px;
+	padding : 0px;
+	padding-left:0px;
+	padding-bottom : 4px;
+	text-indent: 0px;
+}
+
+h1 {
+	color : #048e9e;
+	font-size : 20px;
+}
+
+h2 {
+	font-size : 16px;
+}
+
+/* Nav */
+.header {
+	width : 100%;
+	height : 83px;
+	background : url(../images/bg2.gif) repeat;
+	border-bottom : 3px solid #000;
+}
+
+.logo {
+	background : url('../images/logo.png') no-repeat;
+	width:145px;
+	height : 63px;
+	float : right;
+	margin : 10px;
+	margin-right : 15px;
+}
+
+.plugin-header {
+	background : url('../images/plugin.png') no-repeat;
+	width:103px;
+	height : 22px;
+	float : left;
+	margin : 30px;
+}
+
+.content-wrapper {
+	width : 600px;
+	padding : 30px;
+	float:left;
+	padding-bottom :100px;
+}
+
+.right-wrapper {
+	width : 280px;
+	float:right;
+}
+
+.super-wrapper {
+	min-width : 960px;
+}
+
+.feature-block {
+	padding : 15px;
+	padding-top : 0px;
+	border : 1px dotted #ccc;
+	margin-top : 40px;
+	margin-right : 20px;
+}
+
+.feature-block.notes {
+	padding : 15px;
+}
+
+.feature-block h1 {
+	font-size : 16px;
+	margin-top : 10px;
+}
+
+.feature-block li.group {
+	padding:5px;
+	padding-left : 10px;
+	border-top : 1px dotted #ccc;
+	padding-bottom:0px;
+	
+}
+
+.feature-block a {
+	color : #048E9E;
+}
+
+.syntaxhighlighter {
+	overflow : hidden !important;
+	border : 1px dashed #ccc;
+	padding : 5px;
+	font-size : 0.8em !important;
+	margin-top : 30px !important;
+	margin-bottom : 30px !important;
+	padding-top : 20px;
+	padding-bottom : 20px;
+}
+
+table.options {
+	width : 600px;
+	font-family: Courier;
+	font-size : 11px;
+	margin-left : 10px;
+}
+
+table.options .syntaxhighlighter {
+	border : 0px;
+	padding : 0px;
+	margin : 0px !important
+}
+
+table.options td {
+	width : 33%;
+	padding-bottom : 6px;
+	padding-top : 10px;
+}
+
+table.options tr.description td {
+	font-family : "Calibri", Arial;
+	font-size	: 12px;
+	padding-top : 2px;
+	padding-bottom : 15px;
+	border-bottom : 1px dotted #ccc;
+}
+
+table.options tr.description.bold td {
+	border-bottom : 1px solid #ccc;
+}
